@@ -1,18 +1,9 @@
 const Subscriber = require("../models/Subscriber");
-const Courier = require("../models/Courier");
 const TempSubscriber = require("../models/TempSubscriber");
-const { sendSMS } = require("../utils/twilio");
 require("dotenv").config();
-const axios = require("axios");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const { sendEmail } = require("./courierController");
-const twilio = require("twilio");
 const { getAssignedNumber } = require("./assignController");
 
-const accountSid = process.env.TWILIO_SID; // Your Account SID from www.twilio.com/console
-const authToken = process.env.TWILIO_TOKEN;
-
-const client = require("twilio")(accountSid, authToken);
 exports.subscribe = async (req, res) => {
   const { id } = req.params;
 
@@ -30,7 +21,6 @@ exports.subscribe = async (req, res) => {
         locationType,
         email,
         marketing,
-        courierId,
         selectedDays,
         hasMaxDate,
         maxCheckDate,
@@ -49,15 +39,6 @@ exports.subscribe = async (req, res) => {
         return;
       }
 
-      let carrier = "";
-
-      // try {
-      //   let checkNumberResponse = await client.lookups.v1
-      //     .phoneNumbers(phoneNumber)
-      //     .fetch({ type: ["carrier"] });
-      //   carrier = checkNumberResponse?.carrier?.name;
-      // } catch (error) {}
-
       let assignedNumber = await getAssignedNumber();
 
       await Subscriber.create({
@@ -66,7 +47,6 @@ exports.subscribe = async (req, res) => {
         locationType,
         email,
         marketing,
-        courierId,
         selectedDays,
         hasMaxDate,
         maxCheckDate,
@@ -77,7 +57,6 @@ exports.subscribe = async (req, res) => {
           name: session?.customer_details?.name,
         },
         stripeSession: temp?.stripeSession,
-        carrier,
         assignedNumber,
         endDate: new Date(new Date().setDate(new Date().getDate() + 30)),
         status: "active",
@@ -91,49 +70,6 @@ exports.subscribe = async (req, res) => {
         subscribed: true,
       });
 
-      const config = {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.COURIER_TOKEN}`,
-        },
-      };
-      const data = [
-        {
-          op: "replace",
-          path: "/phone_number",
-          value: phoneNumber,
-        },
-        {
-          op: "replace",
-          path: "/email",
-          value: email,
-        },
-        {
-          op: "replace",
-          path: "/custom",
-          value: {
-            marketing: marketing,
-            subscribed: true,
-          },
-        },
-      ];
-      await axios.patch(
-        `https://api.courier.com/profiles/${courierId}`,
-        {
-          patch: data,
-        },
-        config
-      );
-
-      const response = await sendSMS(
-        temp.phoneNumber,
-        `TTPTracker 1 month - Locations can be updated with phone number on sign up page. To unsubscribe from alerts, just reply STOP. Msg&Data Rates May Apply.`,
-        assignedNumber
-      );
-      if (response) {
-        console.log(new Date().toLocaleTimeString(), " SMS SENT :", response);
-      }
       res.redirect(`${process.env.SUCCESS_URL}`);
       return;
     } else {
@@ -141,7 +77,7 @@ exports.subscribe = async (req, res) => {
       return;
     }
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).json({ error: error.message });
   }
 };
@@ -154,7 +90,7 @@ exports.isSubscribed = async (req, res) => {
 
     res.status(200).json({ subscriber: subscriber ? true : false });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).json({ error: error.message });
   }
 };

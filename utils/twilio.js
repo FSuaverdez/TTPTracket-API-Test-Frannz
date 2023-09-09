@@ -19,7 +19,7 @@ const optOutWords = new Set([
 
 const optInWords = new Set(["start", "yes", "unstop"]);
 
-exports.sendSMS = async (phoneNumber, message, assignedNumber, subscriber) => {
+exports.sendSMS = async (phoneNumber, message, assignedNumber) => {
   try {
     const response = await client.messages.create({
       body: message,
@@ -29,25 +29,7 @@ exports.sendSMS = async (phoneNumber, message, assignedNumber, subscriber) => {
 
     return response.sid;
   } catch (e) {
-    if (
-      String(e?.message).includes("Attempt to send to unsubscribed recipient")
-    ) {
-      console.log("Attempt to send to unsubscribed recipient");
-      if (subscriber) {
-        try {
-          console.log("Attempting to set receiveUpdate to false");
-          await Subscriber.findByIdAndUpdate(subscriber?._id, {
-            receiveUpdate: false,
-          });
-          console.log("receiveUpdate set to false Successfully");
-        } catch (error) {
-          console.log(error?.message);
-        }
-    
-      }
-    } else {
-      console.log(e?.message);
-    }
+    console.log(error?.message);
   }
 };
 
@@ -112,5 +94,17 @@ exports.checkMobileNumber = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json(error);
+  }
+};
+
+exports.checkCarrier = async (phoneNumber) => {
+  try {
+    let checkNumberResponse = await client.lookups.v1
+      .phoneNumbers(phoneNumber)
+      .fetch({ type: ["carrier"] });
+    carrier = checkNumberResponse?.carrier?.name;
+    return carrier;
+  } catch (error) {
+    console.log(error.message);
   }
 };
