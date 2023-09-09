@@ -2,7 +2,6 @@ const express = require("express");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const TempSubscriber = require("../models/TempSubscriber");
 const Subscriber = require("../models/Subscriber");
-const watcher = require("../utils/watcher");
 const Courier = require("../models/Courier");
 const axios = require("axios");
 const { sendEmail } = require("./courierController");
@@ -56,7 +55,6 @@ exports.createCheckout = async (req, res) => {
           checkDays,
         }
       );
-      watcher();
       res.status(200).json({
         subscriber,
       });

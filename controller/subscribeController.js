@@ -2,7 +2,6 @@ const Subscriber = require("../models/Subscriber");
 const Courier = require("../models/Courier");
 const TempSubscriber = require("../models/TempSubscriber");
 const { sendSMS } = require("../utils/twilio");
-const watcher = require("../utils/watcher");
 require("dotenv").config();
 const axios = require("axios");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -127,7 +126,6 @@ exports.subscribe = async (req, res) => {
         config
       );
 
-      watcher();
       const response = await sendSMS(
         temp.phoneNumber,
         `TTPTracker 1 month - Locations can be updated with phone number on sign up page. To unsubscribe from alerts, just reply STOP. Msg&Data Rates May Apply.`,
