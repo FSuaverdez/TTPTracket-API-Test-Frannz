@@ -4,8 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const stripeRoutes = require("./routes/stripeRoutes");
 const subscribeRoutes = require("./routes/subscribeRoutes");
-const { testSMS, twilioHook, checkMobileNumber } = require("./utils/twilio");
-const { testEmail } = require("./controller/courierController");
+const { twilioHook } = require("./utils/twilio");
 const { checkCheckout } = require("./controller/stripeControler");
 const {
   assignNumbersToAll,
