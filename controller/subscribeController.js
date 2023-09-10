@@ -102,3 +102,57 @@ exports.isSubscribed = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateSubscriber = async (req, res) => {
+  try {
+    const {
+      phoneNumber,
+      locations,
+      locationType,
+      email,
+      marketing,
+      selectedDays,
+      hasMaxDate,
+      maxCheckDate,
+      checkDays,
+      receiveUpdate,
+      receiveEmail,
+      secretKey,
+    } = req.body;
+
+    const exist = await Subscriber.findOne({ secretKey, email });
+
+    if (!exist) {
+      res.status(404).json({ error: "No subscriber found" });
+      return;
+    }
+
+    if (exist.status != "active") {
+      res.status(400).json({ error: "This subscriber is inactive" });
+      return;
+    }
+
+    const subscriber = await Subscriber.findOneAndUpdate(
+      { secretKey, status: "active" },
+      {
+        phoneNumber,
+        locations,
+        email,
+        locationType,
+        marketing,
+        selectedDays,
+        hasMaxDate,
+        maxCheckDate,
+        checkDays,
+        receiveUpdate,
+        receiveEmail,
+      }
+    );
+    res.status(200).json({
+      subscriber,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
