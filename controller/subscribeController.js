@@ -44,6 +44,8 @@ exports.subscribe = async (req, res) => {
 
       const secretKey = getSecurityKey();
 
+      const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
+
       await Subscriber.create({
         phoneNumber,
         locations,
@@ -68,6 +70,7 @@ exports.subscribe = async (req, res) => {
         receiveUpdate: true,
         receiveEmail: true,
         secretKey,
+        ip,
       });
 
       await TempSubscriber.findByIdAndUpdate(temp._id, {

@@ -61,6 +61,9 @@ const subscriberSchema = new mongoose.Schema(
     secretKey: {
       type: String,
     },
+    ip: {
+      type: String,
+    },
     locations: [
       {
         locationId: {
