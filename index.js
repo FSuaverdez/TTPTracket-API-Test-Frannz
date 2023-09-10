@@ -35,7 +35,7 @@ app.get("/assign", assignNumbersToAll);
 app.get("/assign-key", assignKeyToAll);
 app.get("/test-ip", async (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  res.send(ip.split(", ")[0]);
+  res.send({ ip: ip.split(", ")[0], reqIp: req.ip });
 });
 mongoose.set("strictQuery", false);
 
