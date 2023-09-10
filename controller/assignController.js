@@ -1,6 +1,6 @@
 const Subscriber = require("../models/Subscriber");
 const { numbers } = require("../utils/numbers");
-
+const { getSecurityKey } = require("../services/generate-key");
 exports.assignNumbersToAll = async (req, res) => {
   try {
     const subscribers = await Subscriber.find();
@@ -10,7 +10,6 @@ exports.assignNumbersToAll = async (req, res) => {
     for (const sub of subscribers) {
       await Subscriber.findByIdAndUpdate(sub._id, {
         assignedNumber: numbers[index],
-        receiveUpdate: sub?.receiveUpdate,
       });
 
       if (index + 1 === numbers.length) {
@@ -87,70 +86,23 @@ exports.correctEndDate = async (req, res) => {
     console.log(error);
   }
 };
-const disabled = [
-  "1978828",
-  "1978590",
-  "1970222",
-  "1949537",
-  "1949412",
-  "1904662",
-  "1862324",
-  "1858342",
-  "1832837",
-  "1832496",
-  "1816372",
-  "1801557",
-  "1703402",
-  "1702373",
-  "1617592",
-  "1603395",
-  "1601347",
-  "1585748",
-  "1530908",
-  "1479381",
-  "1443226",
-  "1415706",
-  "1412418",
-  "1410259",
-  "1337207",
-  "1314650",
-  "1310435",
-  "1240731",
-  "1206495",
-  "1206419",
-  "1202766",
-  "1202709",
-  "1202246",
-  "1202210",
-];
 
-exports.updateStatus = async (req, res) => {
+exports.assignKeyToAll = async (req, res) => {
   try {
-    const exclude = await Promise.all(
-      disabled.map(async (num) => {
-        let sub = await Subscriber.findOne({
-          phoneNumber: { $regex: num, $options: "i" },
+    const subscribers = await Subscriber.find();
+
+    // iterate through all subscribers and check if they have a secret key if not generate one and assign it to them
+    for (const sub of subscribers) {
+      if (!sub.secretKey) {
+        const key = await getSecurityKey();
+        await Subscriber.findByIdAndUpdate(sub._id, {
+          secretKey: key,
         });
-
-        return sub?._id?.toString();
-      })
-    );
-
-    const all = await Subscriber.find();
-
-    const toUpdate = all.filter((sub) => !exclude.includes(sub._id.toString()));
-
-    const updated = await Promise.all(
-      toUpdate.map(async (sub) => {
-        sub = await Subscriber.findByIdAndUpdate(sub._id, {
-          status: "active",
-        });
-
-        return sub;
-      })
-    );
-    res.status(200).json({ subscribers: updated });
+      }
+    }
+    const updatedSubscribers = await Subscriber.find();
+    res.status(200).json(updatedSubscribers);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: error.message });
   }
 };

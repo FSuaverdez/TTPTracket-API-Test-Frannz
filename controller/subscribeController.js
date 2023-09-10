@@ -1,5 +1,6 @@
 const Subscriber = require("../models/Subscriber");
 const TempSubscriber = require("../models/TempSubscriber");
+const { getSecurityKey } = require("../services/generate-key");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { getAssignedNumber } = require("./assignController");
@@ -41,6 +42,8 @@ exports.subscribe = async (req, res) => {
 
       let assignedNumber = await getAssignedNumber();
 
+      const secretKey = getSecurityKey();
+
       await Subscriber.create({
         phoneNumber,
         locations,
@@ -63,6 +66,8 @@ exports.subscribe = async (req, res) => {
         // credit: "20",
         remainingText: "30",
         receiveUpdate: true,
+        receiveEmail: true,
+        secretKey,
       });
 
       await TempSubscriber.findByIdAndUpdate(temp._id, {

@@ -11,7 +11,7 @@ const {
   assignNumbersToAll,
   findLatest,
   correctEndDate,
-  updateStatus,
+  assignKeyToAll,
 } = require("./controller/assignController");
 require("colors");
 dotenv.config();
@@ -31,15 +31,13 @@ const PORT = process.env.PORT || 5000;
 app.use("/stripe", stripeRoutes);
 app.use("/subscribe", subscribeRoutes);
 app.post("/twilio-hook", twilioHook);
-app.get("/test", testSMS);
-app.get("/test-email", testEmail);
-app.get("/test-number", checkMobileNumber);
 app.get("/checkout/:id", checkCheckout);
 app.get("/assign", assignNumbersToAll);
-app.get("/last", findLatest);
-app.get("/get-assign", assignNumbersToAll);
-app.get("/correct", correctEndDate);
-app.get("/status", updateStatus);
+app.get("/assign-key", assignKeyToAll);
+app.get("/test-ip", async (req, res) => {
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  res.send(ip);
+});
 mongoose.set("strictQuery", false);
 
 mongoose

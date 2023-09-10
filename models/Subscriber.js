@@ -36,13 +36,13 @@ const subscriberSchema = new mongoose.Schema(
     receiveUpdate: {
       type: Boolean,
     },
+    receiveEmail: {
+      type: Boolean,
+    },
     nextDay: {
       type: Date,
     },
     remainingText: {
-      type: String,
-    },
-    courierId: {
       type: String,
     },
     stripeSession: {
@@ -56,6 +56,9 @@ const subscriberSchema = new mongoose.Schema(
       type: String,
     },
     assignedNumber: {
+      type: String,
+    },
+    secretKey: {
       type: String,
     },
     locations: [
