@@ -34,8 +34,8 @@ app.get("/checkout/:id", checkCheckout);
 app.get("/assign", assignNumbersToAll);
 app.get("/assign-key", assignKeyToAll);
 app.get("/test-ip", async (req, res) => {
-  const ip = req.connection.remoteAddress;
-  res.send({ ip: ip.split(", ")[0], reqIp: req.ip });
+  const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
+  res.send({ ip });
 });
 mongoose.set("strictQuery", false);
 
