@@ -28,90 +28,80 @@ exports.createCheckout = async (req, res) => {
   } = req.body;
 
   try {
-    const exist = await Subscriber.findOne({ phoneNumber, status: "active" });
+    const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
 
-    if (exist) {
-      const subscriber = await Subscriber.findOneAndUpdate(
-        { phoneNumber },
-        {
-          phoneNumber,
-          locations,
-          email,
-          locationType,
-          marketing,
-          selectedDays,
-          hasMaxDate,
-          maxCheckDate,
-          checkDays,
-        }
-      );
-      res.status(200).json({
-        subscriber,
+    const exist = await Subscriber.find({ ip, status: "active" });
+
+    if (exist.length > 5) {
+      res.status(400).json({
+        error: "You have reached the maximum number of subscriptions",
       });
-    } else {
-      const tempSubscriber = await TempSubscriber.create({
-        phoneNumber,
-        locations,
-        locationType,
-        email,
-        marketing,
-        selectedDays,
-        hasMaxDate,
-        maxCheckDate,
-        checkDays,
-      });
-
-      const successUrl = `${process.env.STRIPE_SUCCESS_URL}/subscribe/${tempSubscriber._id}`;
-
-      const cancelUrl = process.env.STRIPE_CANCEL_URL;
-
-      // const product = await stripe.products.retrieve(process.env.PRODUCT_ID);
-      // const price = await stripe.prices.retrieve(product.default_price);
-
-      // const session = await stripe.checkout.sessions.create({
-      //   line_items: [
-      //     {
-      //       price_data: {
-      //         currency: "usd",
-      //         unit_amount: price.unit_amount,
-      //         product_data: {
-      //           name: product.name,
-      //           images: [product?.images[0]],
-      //         },
-      //       },
-      //       quantity: 1,
-      //     },
-      //   ],
-      //   allow_promotion_codes: true,
-      //   mode: "payment",
-      //   success_url: successUrl,
-      //   cancel_url: cancelUrl,
-      // });
-      const session = await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              unit_amount: 20 * 100,
-              product_data: {
-                name: "TTPTracker Test",
-              },
-            },
-            quantity: 1,
-          },
-        ],
-        allow_promotion_codes: true,
-        mode: "payment",
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-      });
-
-      await TempSubscriber.findByIdAndUpdate(tempSubscriber._id, {
-        stripeSession: session.id,
-      });
-
-      res.status(200).json({ redirect_url: session.url });
+      return;
     }
+
+    const tempSubscriber = await TempSubscriber.create({
+      phoneNumber,
+      locations,
+      locationType,
+      email,
+      marketing,
+      selectedDays,
+      hasMaxDate,
+      maxCheckDate,
+      checkDays,
+    });
+
+    const successUrl = `${process.env.STRIPE_SUCCESS_URL}/subscribe/${tempSubscriber._id}`;
+
+    const cancelUrl = process.env.STRIPE_CANCEL_URL;
+
+    // const product = await stripe.products.retrieve(process.env.PRODUCT_ID);
+    // const price = await stripe.prices.retrieve(product.default_price);
+
+    // const session = await stripe.checkout.sessions.create({
+    //   line_items: [
+    //     {
+    //       price_data: {
+    //         currency: "usd",
+    //         unit_amount: price.unit_amount,
+    //         product_data: {
+    //           name: product.name,
+    //           images: [product?.images[0]],
+    //         },
+    //       },
+    //       quantity: 1,
+    //     },
+    //   ],
+    //   allow_promotion_codes: true,
+    //   mode: "payment",
+    //   success_url: successUrl,
+    //   cancel_url: cancelUrl,
+    // });
+
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: 20 * 100,
+            product_data: {
+              name: "TTPTracker Test",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      allow_promotion_codes: true,
+      mode: "payment",
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+
+    await TempSubscriber.findByIdAndUpdate(tempSubscriber._id, {
+      stripeSession: session.id,
+    });
+
+    res.status(200).json({ redirect_url: session.url });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
