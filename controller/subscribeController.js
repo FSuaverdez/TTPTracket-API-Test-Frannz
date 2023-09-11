@@ -42,7 +42,7 @@ exports.subscribe = async (req, res) => {
 
       let assignedNumber = await getAssignedNumber();
 
-      const secretKey = getSecurityKey();
+      const secretKey = await getSecurityKey();
 
       const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
 
@@ -128,7 +128,7 @@ exports.updateSubscriber = async (req, res) => {
     }
 
     if (exist.status != "active") {
-      res.status(400).json({ error: "This subscriber is inactive" });
+      res.status(400).json({ error: "This subscriber is no longer active" });
       return;
     }
 
