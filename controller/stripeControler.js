@@ -30,9 +30,9 @@ exports.createCheckout = async (req, res) => {
   try {
     const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
 
-    const exist = await Subscriber.find({ ip, status: "active" });
+    const exist = await Subscriber.find({ ip: ip, status: "active" });
 
-    if (exist.length > 5) {
+    if (ip && exist.length > 5) {
       res.status(400).json({
         error: "You have reached the maximum number of subscriptions",
       });
