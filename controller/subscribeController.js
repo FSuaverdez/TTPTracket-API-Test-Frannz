@@ -155,11 +155,6 @@ exports.updateSubscriber = async (req, res) => {
       }
     );
 
-    await TempSubscriber.findByIdAndUpdate(temp._id, {
-      didSubscribe: true,
-      subscribed: true,
-    });
-
     res.status(200).json({
       subscriber,
     });
