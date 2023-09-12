@@ -34,8 +34,6 @@ exports.subscribe = async (req, res) => {
       const session = await stripe.checkout.sessions.retrieve(
         temp?.stripeSession
       );
-      const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
-      console.log(ip);
 
       if (session.payment_status !== "paid") {
         console.log("Unpaid");
@@ -46,6 +44,8 @@ exports.subscribe = async (req, res) => {
       let assignedNumber = await getAssignedNumber();
 
       const secretKey = await getSecurityKey();
+
+      const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
 
       await Subscriber.create({
         phoneNumber,
