@@ -1,6 +1,7 @@
 const Subscriber = require("../models/Subscriber");
 const TempSubscriber = require("../models/TempSubscriber");
 const { getSecurityKey } = require("../services/generate-key");
+const { sendSMS } = require("../utils/twilio");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { getAssignedNumber } = require("./assignController");
@@ -77,6 +78,16 @@ exports.subscribe = async (req, res) => {
         didSubscribe: true,
         subscribed: true,
       });
+
+      const response = await sendSMS(
+        temp.phoneNumber,
+        `TTPTracker 1 month - Locations can be updated with phone number on sign up page. To unsubscribe from alerts, just reply STOP. Msg&Data Rates May Apply.`,
+        assignedNumber
+      );
+
+      if (response) {
+        console.log("SMS SENT :", response);
+      }
 
       res.redirect(`${process.env.SUCCESS_URL}`);
       return;
