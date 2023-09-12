@@ -29,7 +29,7 @@ exports.sendSMS = async (phoneNumber, message, assignedNumber) => {
 
     return response.sid;
   } catch (e) {
-    console.log(error?.message);
+    console.log(e?.message);
   }
 };
 
