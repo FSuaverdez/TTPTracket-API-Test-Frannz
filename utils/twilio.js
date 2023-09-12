@@ -27,10 +27,6 @@ exports.sendSMS = async (phoneNumber, message, assignedNumber) => {
       from: assignedNumber,
     });
 
-    console.log(phoneNumber, message, assignedNumber);
-
-    console.log(response);
-
     return response.sid;
   } catch (e) {
     console.log(e);
