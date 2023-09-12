@@ -47,6 +47,8 @@ exports.subscribe = async (req, res) => {
 
       const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
 
+      console.log(ip);
+
       await Subscriber.create({
         phoneNumber,
         locations,

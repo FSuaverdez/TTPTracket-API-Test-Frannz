@@ -1,6 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const TempSubscriber = require("../models/TempSubscriber");
 const Subscriber = require("../models/Subscriber");
+const { checkSubscription } = require("../services/subscription-check");
 
 exports.checkCheckout = async (req, res) => {
   try {
@@ -49,6 +50,11 @@ exports.createCheckout = async (req, res) => {
       hasMaxDate,
       maxCheckDate,
       checkDays,
+      endDate: new Date().setDate(new Date().getDate() + 30),
+      status: "active",
+      receiveUpdate: true,
+      didSubscribe: false,
+      subscribed: false,
     });
 
     const successUrl = `${process.env.STRIPE_SUCCESS_URL}/subscribe/${tempSubscriber._id}`;
@@ -100,6 +106,8 @@ exports.createCheckout = async (req, res) => {
     await TempSubscriber.findByIdAndUpdate(tempSubscriber._id, {
       stripeSession: session.id,
     });
+
+    checkSubscription(tempSubscriber);
 
     res.status(200).json({ redirect_url: session.url });
   } catch (error) {

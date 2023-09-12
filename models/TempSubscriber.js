@@ -10,7 +10,6 @@ const tempSubscriberSchema = new mongoose.Schema(
     },
     endDate: {
       type: Date,
-      default: new Date().setDate(new Date().getDate() + 30),
     },
     locationType: {
       type: String,
@@ -20,7 +19,6 @@ const tempSubscriberSchema = new mongoose.Schema(
     },
     credit: {
       type: String,
-      default: "20",
     },
     selectedDays: [String],
     checkDays: {
@@ -34,22 +32,18 @@ const tempSubscriberSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: "active",
     },
     receiveUpdate: {
       type: Boolean,
-      default: true,
     },
     courierId: {
       type: String,
     },
     didSubscribe: {
       type: Boolean,
-      default: false,
     },
     subscribed: {
       type: Boolean,
-      default: false,
     },
     stripeSession: {
       type: String,
