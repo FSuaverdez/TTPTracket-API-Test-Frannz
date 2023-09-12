@@ -77,7 +77,7 @@ exports.subscribe = async (req, res) => {
       const response = await sendSMS(
         temp.phoneNumber,
         `TTPTracker 1 month - Locations can be updated with phone number on sign up page. To unsubscribe from alerts, just reply STOP. Msg&Data Rates May Apply.`,
-        assignedNumber
+        "+1888301545"
       );
 
       if (response) {
