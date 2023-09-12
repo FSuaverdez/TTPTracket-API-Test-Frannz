@@ -22,7 +22,7 @@ exports.checkSubscription = (tempSub) => {
       await sendSMS(
         updatedTempSub?.phoneNumber,
         `Test after 2 minutes`,
-        "+1888301545"
+        "+18883015545"
       );
     } catch (error) {
       console.log(error?.message);
