@@ -1,5 +1,6 @@
 const Subscriber = require("../models/Subscriber");
 const TempSubscriber = require("../models/TempSubscriber");
+const { sendSMS } = require("../utils/twilio");
 
 exports.checkSubscription = (tempSub) => {
   setTimeout(async () => {
@@ -18,8 +19,10 @@ exports.checkSubscription = (tempSub) => {
         return;
       }
 
-      console.log(
-        `${updatedTempSub.phoneNumber} did not subscribe after 2 minutes sending a sms reminder`
+      await sendSMS(
+        updatedTempSub?.phoneNumber,
+        `Test after 2 minutes`,
+        "+19178325169"
       );
     } catch (error) {
       console.log(error?.message);
