@@ -51,6 +51,9 @@ const tempSubscriberSchema = new mongoose.Schema(
     carrier: {
       type: String,
     },
+    isReminderSent: {
+      type: Boolean,
+    },
     locations: [
       {
         locationId: {

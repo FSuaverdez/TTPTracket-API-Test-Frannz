@@ -1,6 +1,7 @@
 const Subscriber = require("../models/Subscriber");
 const TempSubscriber = require("../models/TempSubscriber");
 const { getSecurityKey } = require("../services/generate-key");
+const { sendTemplateEmail } = require("../services/send-grid");
 const { sendSMS } = require("../utils/twilio");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -83,6 +84,21 @@ exports.subscribe = async (req, res) => {
       if (response) {
         console.log("SMS SENT :", response);
       }
+
+      const dynamicTemplateData = {
+        secretKey: secretKey,
+      };
+
+      await sendTemplateEmail(
+        email,
+        process.env.SENDGRID_SUBSCRIBED_TEMPLATE,
+        dynamicTemplateData
+      );
+
+      await TempSubscriber.findByIdAndUpdate(temp._id, {
+        didSubscribe: true,
+        subscribed: true,
+      });
 
       res.redirect(`${process.env.SUCCESS_URL}`);
       return;

@@ -19,11 +19,24 @@ exports.checkSubscription = (tempSub) => {
         return;
       }
 
+      const checkIfSent = await TempSubscriber.findOne({
+        phoneNumber: tempSub.phoneNumber,
+        isReminderSent: true,
+      });
+
+      if (checkIfSent) {
+        return;
+      }
+
       await sendSMS(
         updatedTempSub?.phoneNumber,
         `Test after 2 minutes`,
         "+18883015545"
       );
+
+      await TempSubscriber.findByIdAndUpdate(updatedTempSub?._id, {
+        isReminderSent: true,
+      });
     } catch (error) {
       console.log(error?.message);
     }

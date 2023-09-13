@@ -55,6 +55,7 @@ exports.createCheckout = async (req, res) => {
       receiveUpdate: true,
       didSubscribe: false,
       subscribed: false,
+      isReminderSent: false,
     });
 
     const successUrl = `${process.env.STRIPE_SUCCESS_URL}/subscribe/${tempSubscriber._id}`;
