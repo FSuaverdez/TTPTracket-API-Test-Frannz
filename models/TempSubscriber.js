@@ -54,6 +54,9 @@ const tempSubscriberSchema = new mongoose.Schema(
     isReminderSent: {
       type: Boolean,
     },
+    ip: {
+      type: String,
+    },
     locations: [
       {
         locationId: {

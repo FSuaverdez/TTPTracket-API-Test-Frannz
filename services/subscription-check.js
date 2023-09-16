@@ -2,10 +2,19 @@ const Subscriber = require("../models/Subscriber");
 const TempSubscriber = require("../models/TempSubscriber");
 const { sendSMS } = require("../utils/twilio");
 
-exports.checkSubscription = (tempSub) => {
+exports.checkSubscription = (tempSub, ip) => {
   setTimeout(async () => {
     try {
       if (process.env.SEND_REMINDER != "true") {
+        return;
+      }
+
+      const tempCheck = await TempSubscriber.find({
+        ip,
+        isReminderSent: true,
+      });
+
+      if (tempCheck.length >= 5) {
         return;
       }
 

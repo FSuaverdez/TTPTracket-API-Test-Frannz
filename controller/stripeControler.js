@@ -31,15 +31,6 @@ exports.createCheckout = async (req, res) => {
   try {
     const ip = req.headers["x-forwarded-for"]?.split(", ")?.[0];
 
-    const exist = await Subscriber.find({ ip: ip, status: "active" });
-
-    if (ip && exist.length > 5) {
-      res.status(400).json({
-        error: "You have reached the maximum number of subscriptions",
-      });
-      return;
-    }
-
     const tempSubscriber = await TempSubscriber.create({
       phoneNumber,
       locations,
@@ -56,6 +47,7 @@ exports.createCheckout = async (req, res) => {
       didSubscribe: false,
       subscribed: false,
       isReminderSent: false,
+      ip,
     });
 
     const successUrl = `${process.env.STRIPE_SUCCESS_URL}/subscribe/${tempSubscriber._id}`;
@@ -108,7 +100,7 @@ exports.createCheckout = async (req, res) => {
       stripeSession: session.id,
     });
 
-    checkSubscription(tempSubscriber);
+    checkSubscription(tempSubscriber, ip);
 
     res.status(200).json({ redirect_url: session.url });
   } catch (error) {
