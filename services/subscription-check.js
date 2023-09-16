@@ -5,6 +5,10 @@ const { sendSMS } = require("../utils/twilio");
 exports.checkSubscription = (tempSub) => {
   setTimeout(async () => {
     try {
+      if (process.env.SEND_REMINDER != "true") {
+        return;
+      }
+
       const subscriber = await Subscriber.findOne({
         phoneNumber: tempSub.phoneNumber,
       });
