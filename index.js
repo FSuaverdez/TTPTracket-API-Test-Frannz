@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const stripeRoutes = require("./routes/stripeRoutes");
 const subscribeRoutes = require("./routes/subscribeRoutes");
+const freeSubscribeRoutes = require("./routes/freeSubscribeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { twilioHook } = require("./utils/twilio");
 const { checkCheckout } = require("./controller/stripeControler");
@@ -30,6 +31,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use("/stripe", stripeRoutes);
 app.use("/subscribe", subscribeRoutes);
+app.use("/free", freeSubscribeRoutes);
 app.use("/auth", authRoutes);
 app.post("/twilio-hook", twilioHook);
 app.get("/checkout/:id", checkCheckout);
