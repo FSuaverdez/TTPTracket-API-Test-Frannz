@@ -52,7 +52,7 @@ exports.getAssignedNumber = async () => {
   try {
     const latest = await Subscriber.findOne().sort({ _id: -1 });
 
-    let index = numbers.indexOf(latest.assignedNumber);
+    let index = numbers.indexOf(latest?.assignedNumber);
 
     if (!latest) {
       return numbers[0];
@@ -63,7 +63,6 @@ exports.getAssignedNumber = async () => {
     } else {
       index++;
     }
-
     const nextNumber = numbers[index];
     return nextNumber;
   } catch (error) {
