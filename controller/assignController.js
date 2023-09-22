@@ -54,6 +54,10 @@ exports.getAssignedNumber = async () => {
 
     let index = numbers.indexOf(latest.assignedNumber);
 
+    if (index == -1) {
+      index == 0;
+    }
+
     if (index + 1 === numbers.length) {
       index = 0;
     } else {
