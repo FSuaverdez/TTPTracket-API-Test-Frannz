@@ -26,6 +26,8 @@ exports.login = async (req, res) => {
   }
 };
 
+const isFreeActive = process.env.FREE_EMAIL_ACTIVE == "true";
+
 exports.loginFree = async (req, res) => {
   try {
     const { email, key } = req.body;
@@ -35,6 +37,10 @@ exports.loginFree = async (req, res) => {
     if (!subscriber) {
       res.status(404).json({ error: "Invalid Email or Key" });
       return;
+    }
+
+    if (!isFreeActive) {
+      subscriber.status = "inactive";
     }
 
     res.status(200).json({
