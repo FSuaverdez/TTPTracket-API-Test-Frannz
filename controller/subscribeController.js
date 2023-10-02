@@ -69,8 +69,10 @@ exports.subscribe = async (req, res) => {
         status: "active",
         // credit: "20",
         remainingText: "30",
+        remainingEmail: "30",
         receiveUpdate: true,
         receiveEmail: true,
+        limitEmail: false,
         secretKey,
         ip,
       });

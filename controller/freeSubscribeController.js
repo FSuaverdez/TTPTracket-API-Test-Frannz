@@ -20,12 +20,10 @@ exports.subscribeFree = async (req, res) => {
     const checkIp = await FreeSubscriber.find({ ip });
 
     if (checkIp.length > 0) {
-      res
-        .status(400)
-        .json({
-          error:
-            "You can have one free email alert account. To enjoy extended features, consider subscribing to our premium alerts here.",
-        });
+      res.status(400).json({
+        error:
+          "You can have one free email alert account. To enjoy extended features, consider subscribing to our premium alerts here.",
+      });
       return;
     }
 
@@ -38,8 +36,10 @@ exports.subscribeFree = async (req, res) => {
       endDate: new Date(new Date().setDate(new Date().getDate() + 7)),
       status: "active",
       remainingText: "30",
+      remainingEmail: "30",
       receiveUpdate: false,
       receiveEmail: true,
+      limitEmail: false,
       secretKey,
       ip,
     });

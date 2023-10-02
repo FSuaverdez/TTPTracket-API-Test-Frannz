@@ -64,6 +64,12 @@ const freeSubscriberSchema = new mongoose.Schema(
     ip: {
       type: String,
     },
+    remainingEmail: {
+      type: Boolean,
+    },
+    limitEmail: {
+      type: String,
+    },
     locations: [
       {
         locationId: {
