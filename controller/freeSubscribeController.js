@@ -50,7 +50,7 @@ exports.subscribeFree = async (req, res) => {
 
     await sendTemplateEmail(
       email,
-      process.env.SENDGRID_SUBSCRIBED_TEMPLATE,
+      process.env.SENDGRID_FREE_SUBSCRIBED_TEMPLATE,
       dynamicTemplateData
     );
     res.status(201).json({ message: "success" });
