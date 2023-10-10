@@ -65,10 +65,10 @@ const subscriberSchema = new mongoose.Schema(
       type: String,
     },
     remainingEmail: {
-      type: Boolean,
+      type: String,
     },
     limitEmail: {
-      type: String,
+      type: Boolean,
     },
     locations: [
       {
